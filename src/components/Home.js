@@ -79,11 +79,6 @@ const Home = () => {
 
       //using the tracks and artists build the guessing game data
       buildGuessData(tracksForGuessing, artistsForGuessing)
-
-      console.log("Guess Data from fetchGameData: ")
-      console.log(guessDataComplete)
-
-      history.push("/Game", { guessDataComplete })
     }
   }
 
@@ -114,7 +109,7 @@ const Home = () => {
     return artists
   }
 
-  const buildGuessData = (tracksForGuessing, artistsForGuessing) => {
+  const buildGuessData = async (tracksForGuessing, artistsForGuessing) => {
     console.log("Entering buildGuessData")
     let artistChoicesArr = artistsForGuessing.map((artist) => artist.name) // create an array of artist names from artistsForGuessing
 
@@ -146,6 +141,13 @@ const Home = () => {
     console.log(guessDataBuild)
     setGuessDataComplete(guessDataBuild)
   }
+
+  //Pass control to Game component only after guessDataComplete is populated
+  useEffect(() => {
+    if (guessDataComplete.length > 0) {
+      history.push("/Game", { guessDataComplete })
+    }
+  }, [guessDataComplete, history])
 
   useEffect(() => {
     setAuthLoading(true)
