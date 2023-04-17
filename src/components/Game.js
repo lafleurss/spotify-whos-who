@@ -10,6 +10,14 @@ const Game = (props) => {
   return (
     <div>
       <h1>Guess Data:</h1>
+      <ul>
+        {Object.keys(guessData).map((key) => (
+          <li key={key}>
+            <strong>{key}: </strong>
+            {JSON.stringify(guessData[key])}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
