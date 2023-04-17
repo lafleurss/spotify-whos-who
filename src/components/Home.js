@@ -1,26 +1,137 @@
-import React, { useEffect, useState } from 'react'
-import fetchFromSpotify, { request } from '../services/api'
+import React, { useEffect, useState } from "react"
+import fetchFromSpotify, { request } from "../services/api"
+import styled from "styled-components"
+import { Link, useHistory } from "react-router-dom"
+
+import Game from "./Game"
 
 const AUTH_ENDPOINT =
-  'https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token'
-const TOKEN_KEY = 'whos-who-access-token'
+  "https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token"
+const TOKEN_KEY = "whos-who-access-token"
+
+const HomeContainer = styled.div`
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+const GameConfig = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+const GameConfigItem = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 10px 10px 10px;
+`
 
 const Home = () => {
+  //Using history to conditionally redirect to Game if all validations pass
+  const history = useHistory()
+  let guessDataComplete = []
+
   const [genres, setGenres] = useState([])
-  const [selectedGenre, setSelectedGenre] = useState('')
+  const [selectedGenre, setSelectedGenre] = useState("")
+  //Added two states to capture number of Songs and Artists config
+  const [numSongs, setNumSongs] = useState(1)
+  const [numArtists, setNumArtists] = useState(2)
+
   const [authLoading, setAuthLoading] = useState(false)
   const [configLoading, setConfigLoading] = useState(false)
-  const [token, setToken] = useState('')
+  const [token, setToken] = useState("")
 
-  const loadGenres = async t => {
+  const loadGenres = async (t) => {
     setConfigLoading(true)
     const response = await fetchFromSpotify({
       token: t,
-      endpoint: 'recommendations/available-genre-seeds'
+      endpoint: "recommendations/available-genre-seeds",
     })
     console.log(response)
     setGenres(response.genres)
     setConfigLoading(false)
+  }
+
+  const validateConfig = () => {
+    if (!selectedGenre) {
+      alert("Choose a genre!")
+      return false
+    }
+    return true
+  }
+  const fetchGameData = async (t) => {
+    if (validateConfig()) {
+      await fetchTracksByGenre(t, selectedGenre, numSongs)
+      history.push("/Game", { guessDataComplete })
+    }
+  }
+
+  const fetchTracksByGenre = async (t, genre, numSongs) => {
+    //Fetching 50 to allow some randomization of tracks
+    console.log("Entering fetchTracksByGenre")
+    const endpoint = `search?q=${selectedGenre}&type=track&limit=50`
+    const response = await fetchFromSpotify({
+      token: t,
+      endpoint: endpoint,
+    })
+    const tracks = response.tracks.items
+    const randomizedTracks = tracks.sort(() => 0.5 - Math.random())
+
+    let tracksForGuessing = randomizedTracks.slice(0, numSongs)
+
+    let artistsForGuessing = await fetchRandomArtistsByGenre(
+      t,
+      genre,
+      numArtists
+    )
+
+    buildGuessData(tracksForGuessing, artistsForGuessing)
+  }
+
+  const fetchRandomArtistsByGenre = async (t, genre, numArtists) => {
+    //Fetching 50 to allow some randomization of tracks
+    console.log("Entering fetchRandomArtistsByGenre")
+    const endpoint = `search?q=${selectedGenre}&type=artist&limit=50`
+    const response = await fetchFromSpotify({
+      token: t,
+      endpoint: endpoint,
+    })
+    const artists = response.artists.items
+
+    console.log(artists)
+    return artists
+  }
+
+  const buildGuessData = (tracksForGuessing, artistsForGuessing) => {
+    console.log("Entering buildGuessData")
+    let artistChoicesArr = artistsForGuessing.map((artist) => artist.name) // create an array of artist names from artistsForGuessing
+
+    //for each track build a new object with track name, preview_url, artist name and an array of choice options
+    const guessDataComplete = tracksForGuessing.reduce((acc, track) => {
+      console.log(track)
+
+      const shuffledArtistChoicesArr = artistChoicesArr.sort(
+        () => 0.5 - Math.random()
+      )
+      // Pick random artist choices from the shuffledChoices
+      const pickedArtistChoices = shuffledArtistChoicesArr.slice(
+        0,
+        numArtists - 1
+      )
+      pickedArtistChoices.push(track.artists[0].name) //push the correct artist
+
+      const newTrack = {
+        name: track.name,
+        preview_url: track.preview_url,
+        artist: track.artists[0].name, //picking the first artist in case there are multiple ones
+        choices: pickedArtistChoices,
+      }
+
+      return [...acc, newTrack] // Append newTrack to accumulator array
+    }, [])
+    console.log(guessDataComplete)
   }
 
   useEffect(() => {
@@ -30,18 +141,18 @@ const Home = () => {
     if (storedTokenString) {
       const storedToken = JSON.parse(storedTokenString)
       if (storedToken.expiration > Date.now()) {
-        console.log('Token found in localstorage')
+        console.log("Token found in localstorage")
         setAuthLoading(false)
         setToken(storedToken.value)
         loadGenres(storedToken.value)
         return
       }
     }
-    console.log('Sending request to AWS endpoint')
+    console.log("Sending request to AWS endpoint")
     request(AUTH_ENDPOINT).then(({ access_token, expires_in }) => {
       const newToken = {
         value: access_token,
-        expiration: Date.now() + (expires_in - 20) * 1000
+        expiration: Date.now() + (expires_in - 20) * 1000,
       }
       localStorage.setItem(TOKEN_KEY, JSON.stringify(newToken))
       setAuthLoading(false)
@@ -55,20 +166,76 @@ const Home = () => {
   }
 
   return (
-    <div>
-      Genre:
-      <select
-        value={selectedGenre}
-        onChange={event => setSelectedGenre(event.target.value)}
-      >
-        <option value='' />
-        {genres.map(genre => (
-          <option key={genre} value={genre}>
-            {genre}
-          </option>
-        ))}
-      </select>
-    </div>
+    <HomeContainer>
+      <h1>Who's Who</h1>
+      <GameConfig>
+        <GameConfigItem>
+          Genre:
+          <select
+            value={selectedGenre}
+            onChange={(event) => setSelectedGenre(event.target.value)}
+          >
+            <option value="">Select Genre</option>
+            {genres.map((genre) => (
+              <option key={genre} value={genre}>
+                {genre}
+              </option>
+            ))}
+          </select>
+        </GameConfigItem>
+        <GameConfigItem>
+          # of Songs in Game
+          <input
+            type="number"
+            min="1"
+            max="5"
+            inputMode="numeric"
+            value={numSongs}
+            onChange={(event) => {
+              const inputVal = event.target.value
+              // Use regular expression to remove any non-numeric characters
+              const numericVal = event.target.value.replace(/[^0-9]/g, "")
+              setNumSongs(numericVal)
+            }}
+          />
+        </GameConfigItem>
+        <GameConfigItem>
+          # of Artists in Choice
+          <input
+            type="number"
+            min="1"
+            max="5"
+            inputMode="numeric"
+            value={numArtists}
+            onChange={(event) => {
+              const inputVal = event.target.value
+              // Use regular expression to remove any non-numeric characters
+              const numericVal = event.target.value.replace(/[^0-9]/g, "")
+              setNumArtists(numericVal)
+            }}
+          />
+        </GameConfigItem>
+        <GameConfigItem>
+          {/* <Link to="/Game"> */}
+          <button
+            value="Start"
+            onClick={() => {
+              console.log("Button clicked")
+              console.log("Genre: " + selectedGenre)
+              console.log("Num Songs: " + numSongs)
+              console.log("Num Artists: " + numArtists)
+
+              fetchGameData(token)
+              //Fetch x songs based on genre
+              //For each song build array of artists - 1 correct + n-1 random
+            }}
+          >
+            Start
+          </button>
+          {/* </Link> */}
+        </GameConfigItem>
+      </GameConfig>
+    </HomeContainer>
   )
 }
 
