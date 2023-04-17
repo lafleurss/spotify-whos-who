@@ -31,7 +31,7 @@ const GameConfigItem = styled.div`
 const Home = () => {
   //Using history to conditionally redirect to Game if all validations pass
   const history = useHistory()
-  let guessDataComplete = []
+  const [guessDataComplete, setGuessDataComplete] = useState([])
 
   const [genres, setGenres] = useState([])
   const [selectedGenre, setSelectedGenre] = useState("")
@@ -63,7 +63,26 @@ const Home = () => {
   }
   const fetchGameData = async (t) => {
     if (validateConfig()) {
-      await fetchTracksByGenre(t, selectedGenre, numSongs)
+      //Fetch tracks by genre
+      let tracksForGuessing = await fetchTracksByGenre(
+        t,
+        selectedGenre,
+        numSongs
+      )
+
+      //fetch artists by genre
+      let artistsForGuessing = await fetchRandomArtistsByGenre(
+        t,
+        selectedGenre,
+        numArtists
+      )
+
+      //using the tracks and artists build the guessing game data
+      buildGuessData(tracksForGuessing, artistsForGuessing)
+
+      console.log("Guess Data from fetchGameData: ")
+      console.log(guessDataComplete)
+
       history.push("/Game", { guessDataComplete })
     }
   }
@@ -79,15 +98,7 @@ const Home = () => {
     const tracks = response.tracks.items
     const randomizedTracks = tracks.sort(() => 0.5 - Math.random())
 
-    let tracksForGuessing = randomizedTracks.slice(0, numSongs)
-
-    let artistsForGuessing = await fetchRandomArtistsByGenre(
-      t,
-      genre,
-      numArtists
-    )
-
-    buildGuessData(tracksForGuessing, artistsForGuessing)
+    return randomizedTracks.slice(0, numSongs)
   }
 
   const fetchRandomArtistsByGenre = async (t, genre, numArtists) => {
@@ -100,7 +111,6 @@ const Home = () => {
     })
     const artists = response.artists.items
 
-    console.log(artists)
     return artists
   }
 
@@ -108,30 +118,33 @@ const Home = () => {
     console.log("Entering buildGuessData")
     let artistChoicesArr = artistsForGuessing.map((artist) => artist.name) // create an array of artist names from artistsForGuessing
 
-    //for each track build a new object with track name, preview_url, artist name and an array of choice options
-    const guessDataComplete = tracksForGuessing.reduce((acc, track) => {
-      console.log(track)
-
+    //for each track build a new newGuessData object with track name, preview_url, artist name and an array of choice options
+    const guessDataBuild = tracksForGuessing.reduce((acc, guessData) => {
+      //Randomize artists for choices
       const shuffledArtistChoicesArr = artistChoicesArr.sort(
         () => 0.5 - Math.random()
       )
-      // Pick random artist choices from the shuffledChoices
+      // Pick random artist choice from the shuffledChoices based on numArtist minus 1 (for the correct choice)
       const pickedArtistChoices = shuffledArtistChoicesArr.slice(
         0,
         numArtists - 1
       )
-      pickedArtistChoices.push(track.artists[0].name) //push the correct artist
+      //Insert correct artist choice
+      pickedArtistChoices.push(guessData.artists[0].name)
 
-      const newTrack = {
-        name: track.name,
-        preview_url: track.preview_url,
-        artist: track.artists[0].name, //picking the first artist in case there are multiple ones
+      const newGuessData = {
+        name: guessData.name,
+        preview_url: guessData.preview_url,
+        artist: guessData.artists[0].name, //picking the first artist in case there are multiple ones
         choices: pickedArtistChoices,
       }
 
-      return [...acc, newTrack] // Append newTrack to accumulator array
+      return [...acc, newGuessData] // Append newGuessData to accumulator array
     }, [])
-    console.log(guessDataComplete)
+
+    console.log("Guess Data from buildGuessData: ")
+    console.log(guessDataBuild)
+    setGuessDataComplete(guessDataBuild)
   }
 
   useEffect(() => {
