@@ -34,16 +34,20 @@ const Home = () => {
   const [guessDataComplete, setGuessDataComplete] = useState([]);
 
   const [genres, setGenres] = useState([]);
-  const [selectedGenre, setSelectedGenre] = useState(() => {
+  const [selectedGenre, setSelectedGenre] = useState(() => { 
+    //function to get state from local storage if available
     const localGenre = JSON.parse(localStorage.getItem("SELECTED_GENRE"))
     return localGenre || ''
   });
   //Added two states to capture number of Songs and Artists config
   const [numSongs, setNumSongs] = useState(() => {
+    //function to get state from local storage if available
+
     const localNumSongs = JSON.parse(localStorage.getItem("NUM_SONGS"))
     return localNumSongs || 1
   });
   const [numArtists, setNumArtists] = useState(() => {
+    //function to get state from local storage if available
     const localNumArtists = JSON.parse(localStorage.getItem("NUM_ARTISTS"))
     return localNumArtists || 2
   });
