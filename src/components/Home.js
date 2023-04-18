@@ -131,7 +131,12 @@ const Home = () => {
 
   const buildGuessData = async (tracksForGuessing, artistsForGuessing) => {
     console.log("Entering buildGuessData");
-    let artistChoicesArr = artistsForGuessing.map((artist) => artist.name); // create an array of artist names from artistsForGuessing
+    let artistChoicesArr = artistsForGuessing.map((artist) => ({
+      key: artist.name,
+      name: artist.name,
+      imgUrl: artist.images[0].url
+    })); // create an array of artist names from artistsForGuessing
+    console.log(artistChoicesArr)
 
     //for each track build a new newGuessData object with track name, preview_url, artist name and an array of choice options
     const guessDataBuild = tracksForGuessing.reduce((acc, guessData) => {
@@ -144,8 +149,14 @@ const Home = () => {
         0,
         numArtists - 1
       );
+
+      console.log("guessData: ", guessData)
       //Insert correct artist choice
-      pickedArtistChoices.push(guessData.artists[0].name);
+      pickedArtistChoices.push({
+        key: guessData.artists[0].name,
+        name: guessData.artists[0].name,
+        imgUrl: guessData.album.images[0].url
+       });
 
       const newGuessData = {
         name: guessData.name,
