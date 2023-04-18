@@ -93,8 +93,8 @@ const Game = (props) => {
       <ArtistContainer>
         {guessData[gameRound].choices.map((choice) => (
           <Artist onClick={() => submitArtistChoice(choice)}>
-            <img></img>
-            <span>{choice}</span>
+            <img src={choice.imgUrl} />
+            <span>{choice.name}</span>
           </Artist>
         ))}
       </ArtistContainer>
