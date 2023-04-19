@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react"
-import fetchFromSpotify, { request } from "../services/api"
+import fetchFromSpotify, { request } from "../../services/api"
 import styled from "styled-components"
 import { Link, useHistory } from "react-router-dom"
 
-import Game from "./Game"
+import Button from "../Button"
+import Background from "../Background"
 
 const AUTH_ENDPOINT =
   "https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token"
@@ -25,21 +26,21 @@ const HomeContainer = styled.div`
   /* margin: 100px; */
 `
 
-const Background = styled.div`
-  background: url("cheers.jpg");
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`
+// const Background = styled.div`
+//   background: url("cheers.jpg");
+//   height: 100vh;
+//   width: 100vw;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+// `
 
-const HomeBackground = styled.div`
-  background: #fff;
-  opacity: 0.5;
-  border-radius: 30px;
-`
+// const HomeBackground = styled.div`
+//   background: #fff;
+//   opacity: 0.5;
+//   border-radius: 30px;
+// `
 
 const GameConfig = styled.div`
   display: flex;
@@ -65,17 +66,6 @@ const Select = styled.select`
 
 const Input = styled.input`
   border-radius: 7px;
-`
-
-const Button = styled.button`
-  background: rgb(182, 67, 29);
-  width: ${({ width }) => width};
-  height: 50px;
-  border-radius: 15px;
-  font-size: 1.3em;
-  box-shadow: 2px 2px 2px 2px#333;
-  cursor: pointer;
-  margin: 25px;
 `
 
 const Home = () => {
@@ -258,9 +248,6 @@ const Home = () => {
     return <HomeContainer>Loading...</HomeContainer>
   }
 
-  // return (
-  //   <Background></Background>
-  // )
   return (
     <Background>
       <HomeContainer>
@@ -333,8 +320,6 @@ const Home = () => {
               {/* </Link> */}
             </GameConfigItem>
           </GameConfig>
-        <HomeBackground>
-        </HomeBackground>
       </HomeContainer>
     </Background>
   )
