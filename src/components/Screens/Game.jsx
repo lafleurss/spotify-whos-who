@@ -10,6 +10,7 @@ const StyledGame = styled.div`
   align-items: center;
   flex-direction: column;
   background: #fff;
+  opacity: 0.6;
   border: 5px solid black;
   border-radius: 30px;
   width: 70%;
@@ -57,7 +58,6 @@ const Artist = styled.div`
   margin: 5px;
   cursor: pointer;
   & img {
-    
   }
   & span {
     width: 100%;
@@ -68,7 +68,7 @@ const Artist = styled.div`
 const ImgContainer = styled.div`
   width: 95%;
   height: 80%;
-  background: url(${({image}) => image});
+  background: url(${({ image }) => image});
   background-size: contain;
 `
 
@@ -92,6 +92,7 @@ const Game = (props) => {
   const [currentSong, setCurrentSong] = useState(null)
   const [nextAction, setNextAction] = useState("Next Song")
   const [showNextAction, setShowNextAction] = useState(false)
+  const [clickedIndices, setClickedIndices] = useState([])
 
   console.log(props)
   const guessData = props.location.state.guessDataComplete
@@ -124,6 +125,9 @@ const Game = (props) => {
   }
 
   const handleNextRound = () => {
+    //Reset clicked indices
+    setClickedIndices([])
+
     //Stop playing the song if next button is clicked
     if (currentSong) {
       currentSong.stop()
@@ -150,23 +154,22 @@ const Game = (props) => {
     history.push("/")
   }
 
-  const submitArtistChoice = (choice) => {
-    console.log("artist choice: ", choice)
-    // TODO: add styling to distinguish which artist was chosen
-
-    setShowNextAction(true)
-    //check if the choice is correct
-    if (choice.name === guessData[gameRound].artist) {
-      // alert("Correct!")
-      setIsCorrect(true)
-      setIsIncorrect(false)
-      setScore(score + 1)
-      // handleNextRound()
-    } else {
-      // alert("Incorrect!")
-      setIsCorrect(false)
-      setIsIncorrect(true)
-      // handleNextRound()
+  const submitArtistChoice = (choice, index) => {
+    if (!clickedIndices.includes(index)) {
+      setClickedIndices([...clickedIndices, index])
+      console.log(clickedIndices)
+      setShowNextAction(true)
+      //check if the choice is correct
+      if (choice.name === guessData[gameRound].artist) {
+        setIsCorrect(true)
+        setIsIncorrect(false)
+        setScore(score + 1)
+        // handleNextRound()
+      } else {
+        setIsCorrect(false)
+        setIsIncorrect(true)
+        // handleNextRound()
+      }
     }
   }
 
@@ -185,7 +188,11 @@ const Game = (props) => {
             </Song>
             <ArtistContainer>
               {guessData[gameRound].choices.map((choice, index) => (
-                <Artist key={index} onClick={() => submitArtistChoice(choice)}>
+                <Artist
+                  key={index}
+                  onClick={() => submitArtistChoice(choice, index)}
+                  disabled={clickedIndices.includes(index)}
+                >
                   <ImgContainer image={choice.imgUrl} />
                   <span>{choice.name}</span>
                 </Artist>

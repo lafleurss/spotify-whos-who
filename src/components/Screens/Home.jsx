@@ -11,7 +11,7 @@ const AUTH_ENDPOINT =
 const TOKEN_KEY = "whos-who-access-token"
 
 const HomeContainer = styled.div`
-  color: rgb(41, 83, 16);
+  color: rgba(41, 83, 16, 1);
   font-size: 2em;
   height: 50vh;
   width: 50vw;
@@ -21,26 +21,10 @@ const HomeContainer = styled.div`
   justify-content: center;
   border: 5px solid black;
   border-radius: 30px;
-  background: #fff;
-  /* opacity: 0.9; */
-  /* margin: 100px; */
+  background: #000000;
+  opacity: 0.6;
+  color: white;
 `
-
-// const Background = styled.div`
-//   background: url("cheers.jpg");
-//   height: 100vh;
-//   width: 100vw;
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   justify-content: center;
-// `
-
-// const HomeBackground = styled.div`
-//   background: #fff;
-//   opacity: 0.5;
-//   border-radius: 30px;
-// `
 
 const GameConfig = styled.div`
   display: flex;
@@ -251,75 +235,75 @@ const Home = () => {
   return (
     <Background>
       <HomeContainer>
-          <h1>Who's Who</h1>
-          <GameConfig>
-            <GameConfigItem>
-              Genre:
-              <Select
-                value={selectedGenre}
-                onChange={(event) => setSelectedGenre(event.target.value)}
-              >
-                <option value=''>Select Genre</option>
-                {genres.map((genre) => (
-                  <option key={genre} value={genre}>
-                    {genre}
-                  </option>
-                ))}
-              </Select>
-            </GameConfigItem>
-            <GameConfigItem>
-              # of Songs in Game
-              <Input
-                type='number'
-                min='1'
-                max='3'
-                inputMode='numeric'
-                value={numSongs}
-                onChange={(event) => {
-                  const inputVal = event.target.value
-                  // Use regular expression to remove any non-numeric characters
-                  const numericVal = event.target.value.replace(/[^0-9]/g, "")
-                  setNumSongs(numericVal)
-                }}
-              />
-            </GameConfigItem>
-            <GameConfigItem>
-              # of Artists in Choice
-              <Input
-                type='number'
-                min='2'
-                max='4'
-                inputMode='numeric'
-                value={numArtists}
-                onChange={(event) => {
-                  const inputVal = event.target.value
-                  // Use regular expression to remove any non-numeric characters
-                  const numericVal = event.target.value.replace(/[^0-9]/g, "")
-                  setNumArtists(numericVal)
-                }}
-              />
-            </GameConfigItem>
-            <GameConfigItem jc={"center"}>
-              {/* <Link to="/Game"> */}
-              <Button
-                width={"80%"}
-                value='Start'
-                onClick={() => {
-                  console.log("Button clicked")
-                  console.log("Genre: " + selectedGenre)
-                  console.log("Num Songs: " + numSongs)
-                  console.log("Num Artists: " + numArtists)
+        <h1>Who's Who</h1>
+        <GameConfig>
+          <GameConfigItem>
+            Genre:
+            <Select
+              value={selectedGenre}
+              onChange={(event) => setSelectedGenre(event.target.value)}
+            >
+              <option value="">Select Genre</option>
+              {genres.map((genre) => (
+                <option key={genre} value={genre}>
+                  {genre}
+                </option>
+              ))}
+            </Select>
+          </GameConfigItem>
+          <GameConfigItem>
+            # of Songs in Game
+            <Input
+              type="number"
+              min="1"
+              max="3"
+              inputMode="numeric"
+              value={numSongs}
+              onChange={(event) => {
+                const inputVal = event.target.value
+                // Use regular expression to remove any non-numeric characters
+                const numericVal = event.target.value.replace(/[^0-9]/g, "")
+                setNumSongs(numericVal)
+              }}
+            />
+          </GameConfigItem>
+          <GameConfigItem>
+            # of Artists in Choice
+            <Input
+              type="number"
+              min="2"
+              max="4"
+              inputMode="numeric"
+              value={numArtists}
+              onChange={(event) => {
+                const inputVal = event.target.value
+                // Use regular expression to remove any non-numeric characters
+                const numericVal = event.target.value.replace(/[^0-9]/g, "")
+                setNumArtists(numericVal)
+              }}
+            />
+          </GameConfigItem>
+          <GameConfigItem jc={"center"}>
+            {/* <Link to="/Game"> */}
+            <Button
+              width={"80%"}
+              value="Start"
+              onClick={() => {
+                console.log("Button clicked")
+                console.log("Genre: " + selectedGenre)
+                console.log("Num Songs: " + numSongs)
+                console.log("Num Artists: " + numArtists)
 
-                  fetchGameData(token)
-                  //Fetch x songs based on genre
-                  //For each song build array of artists - 1 correct + n-1 random
-                }}
-              >
-                Start
-              </Button>
-              {/* </Link> */}
-            </GameConfigItem>
-          </GameConfig>
+                fetchGameData(token)
+                //Fetch x songs based on genre
+                //For each song build array of artists - 1 correct + n-1 random
+              }}
+            >
+              Start
+            </Button>
+            {/* </Link> */}
+          </GameConfigItem>
+        </GameConfig>
       </HomeContainer>
     </Background>
   )
