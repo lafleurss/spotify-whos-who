@@ -10,11 +10,37 @@ const AUTH_ENDPOINT =
 const TOKEN_KEY = "whos-who-access-token"
 
 const HomeContainer = styled.div`
-  height: 70vh;
+  color: rgb(41, 83, 16);
+  font-size: 2em;
+  height: 50vh;
+  width: 50vw;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  border: 5px solid black;
+  border-radius: 30px;
+  background: #fff;
+  /* opacity: 0.9; */
+  /* margin: 100px; */
 `
+
+const Background = styled.div`
+  background: url("cheers.jpg");
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`
+
+const HomeBackground = styled.div`
+  background: #fff;
+  opacity: 0.5;
+  border-radius: 30px;
+`
+
 const GameConfig = styled.div`
   display: flex;
   flex-direction: column;
@@ -22,10 +48,34 @@ const GameConfig = styled.div`
 `
 
 const GameConfigItem = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  justify-content: ${({ jc }) => jc};
   padding: 10px 10px 10px 10px;
+`
+
+GameConfigItem.defaultProps = {
+  jc: "space-between",
+}
+
+const Select = styled.select`
+  border-radius: 7px;
+`
+
+const Input = styled.input`
+  border-radius: 7px;
+`
+
+const Button = styled.button`
+  background: rgb(182, 67, 29);
+  width: ${({ width }) => width};
+  height: 50px;
+  border-radius: 15px;
+  font-size: 1.3em;
+  box-shadow: 2px 2px 2px 2px#333;
+  cursor: pointer;
+  margin: 25px;
 `
 
 const Home = () => {
@@ -96,7 +146,7 @@ const Home = () => {
 
   const fetchTracksByGenre = async (t, numSongs) => {
     //Fetching 50 to allow some randomization of tracks
-    const endpoint = `search?q=${selectedGenre}&type=track&limit=50`
+    const endpoint = `search?q=genre:"${selectedGenre}"&type=track&limit=50`
     const response = await fetchFromSpotify({
       token: t,
       endpoint: endpoint,
@@ -205,80 +255,88 @@ const Home = () => {
   }, [])
 
   if (authLoading || configLoading) {
-    return <div>Loading...</div>
+    return <HomeContainer>Loading...</HomeContainer>
   }
 
+  // return (
+  //   <Background></Background>
+  // )
   return (
-    <HomeContainer>
-      <h1>Who's Who</h1>
-      <GameConfig>
-        <GameConfigItem>
-          Genre:
-          <select
-            value={selectedGenre}
-            onChange={(event) => setSelectedGenre(event.target.value)}
-          >
-            <option value="">Select Genre</option>
-            {genres.map((genre) => (
-              <option key={genre} value={genre}>
-                {genre}
-              </option>
-            ))}
-          </select>
-        </GameConfigItem>
-        <GameConfigItem>
-          # of Songs in Game
-          <input
-            type="number"
-            min="1"
-            max="5"
-            inputMode="numeric"
-            value={numSongs}
-            onChange={(event) => {
-              const inputVal = event.target.value
-              // Use regular expression to remove any non-numeric characters
-              const numericVal = event.target.value.replace(/[^0-9]/g, "")
-              setNumSongs(numericVal)
-            }}
-          />
-        </GameConfigItem>
-        <GameConfigItem>
-          # of Artists in Choice
-          <input
-            type="number"
-            min="1"
-            max="5"
-            inputMode="numeric"
-            value={numArtists}
-            onChange={(event) => {
-              const inputVal = event.target.value
-              // Use regular expression to remove any non-numeric characters
-              const numericVal = event.target.value.replace(/[^0-9]/g, "")
-              setNumArtists(numericVal)
-            }}
-          />
-        </GameConfigItem>
-        <GameConfigItem>
-          {/* <Link to="/Game"> */}
-          <button
-            value="Start"
-            onClick={() => {
-              console.log("Button clicked")
-              console.log("Genre: " + selectedGenre)
-              console.log("Num Songs: " + numSongs)
-              console.log("Num Artists: " + numArtists)
+    <Background>
+      <HomeContainer>
+          <h1>Who's Who</h1>
+          <GameConfig>
+            <GameConfigItem>
+              Genre:
+              <Select
+                value={selectedGenre}
+                onChange={(event) => setSelectedGenre(event.target.value)}
+              >
+                <option value=''>Select Genre</option>
+                {genres.map((genre) => (
+                  <option key={genre} value={genre}>
+                    {genre}
+                  </option>
+                ))}
+              </Select>
+            </GameConfigItem>
+            <GameConfigItem>
+              # of Songs in Game
+              <Input
+                type='number'
+                min='1'
+                max='3'
+                inputMode='numeric'
+                value={numSongs}
+                onChange={(event) => {
+                  const inputVal = event.target.value
+                  // Use regular expression to remove any non-numeric characters
+                  const numericVal = event.target.value.replace(/[^0-9]/g, "")
+                  setNumSongs(numericVal)
+                }}
+              />
+            </GameConfigItem>
+            <GameConfigItem>
+              # of Artists in Choice
+              <Input
+                type='number'
+                min='2'
+                max='4'
+                inputMode='numeric'
+                value={numArtists}
+                onChange={(event) => {
+                  const inputVal = event.target.value
+                  // Use regular expression to remove any non-numeric characters
+                  const numericVal = event.target.value.replace(/[^0-9]/g, "")
+                  setNumArtists(numericVal)
+                }}
+              />
+            </GameConfigItem>
+            <GameConfigItem jc={"center"}>
+              {/* <Link to="/Game"> */}
+              <Button
+                width={"80%"}
+                value='Start'
+                onClick={() => {
+                  console.log("Button clicked")
+                  console.log("Genre: " + selectedGenre)
+                  console.log("Num Songs: " + numSongs)
+                  console.log("Num Artists: " + numArtists)
 
-              fetchGameData(token)
-              //Fetch x songs based on genre
-              //For each song build array of artists - 1 correct + n-1 random
-            }}
-          >
-            Start
-          </button>
-          {/* </Link> */}
-        </GameConfigItem>
-      </GameConfig>
-    </HomeContainer>
+                  fetchGameData(token)
+                  //Fetch x songs based on genre
+                  //For each song build array of artists - 1 correct + n-1 random
+                }}
+              >
+                Start
+              </Button>
+              {/* </Link> */}
+            </GameConfigItem>
+          </GameConfig>
+        <HomeBackground>
+        </HomeBackground>
+      </HomeContainer>
+    </Background>
   )
 }
 
