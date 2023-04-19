@@ -1,14 +1,14 @@
 import React from "react"
 import { Route } from "react-router-dom"
 
-import Home from "./Home"
-import Game from "./Game"
+import Home from "./Screens/Home.jsx"
+import Game from "./Screens/Game.jsx"
 
 const App = () => (
-  <div>
+  <>
     <Route exact path="/" component={Home} />
     <Route path="/Game" component={Game} />
-  </div>
+  </>
 )
 
 export default App
