@@ -7,13 +7,18 @@ import Button from "../Button.jsx"
 
 const StyledGame = styled.div`
   color: #fff;
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
   flex-direction: column;
   background: rgba(0, 0, 0, 0.6);
   border-radius: 30px;
   width: 70%;
-  padding: 30px 0px 50px 0px;
+  max-height: 95%;
+  /* padding: 30px 0px 50px 0px; */
+  & span {
+    margin: 10px 0;
+  }
   @media only screen and (max-width: 1000px) {
     width: 70%;
   }
@@ -102,6 +107,7 @@ const Artist = styled.div`
 const ImgContainer = styled.div`
   width: 95%;
   height: 77%;
+  margin-top: 10px;
   background: url(${({ image }) => image}) center no-repeat;
   background-size: contain;
 `
@@ -129,7 +135,9 @@ const Game = (props) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentSong, setCurrentSong] = useState(null)
   const [showNextAction, setShowNextAction] = useState(false)
-  const [nextAction, setNextAction] = useState(props.location.state.guessDataComplete.length > 1 ? "Next Song" : "Results")
+  const [nextAction, setNextAction] = useState(
+    props.location.state.guessDataComplete.length > 1 ? "Next Song" : "Results"
+  )
   const [choiceSubmitted, setChoiceSubmitted] = useState(false)
   // const [clickedIndices, setClickedIndices] = useState([])
 
@@ -226,7 +234,7 @@ const Game = (props) => {
           <ArtistContainer>
             {guessData[gameRound].choices.map((choice, index) =>
               choiceSubmitted ? (
-                <Artist key={index} style={{cursor: 'auto'}}>
+                <Artist key={index} style={{ cursor: "auto" }}>
                   <ImgContainer image={choice.imgUrl} />
                   <span>{choice.name}</span>
                 </Artist>
@@ -243,13 +251,15 @@ const Game = (props) => {
           </ArtistContainer>
           {!showFinalScore && <div>Current Score: {score}</div>}
 
-          {isCorrect === true && <p>Correct!</p>}
-          {isIncorrect === true && <p>Incorrect!</p>}
+          {isCorrect === true && <span>Correct!</span>}
+          {isIncorrect === true && <span>Incorrect!</span>}
           {isIncorrect === true && (
-            <p>Correct Answer: {guessData[gameRound].artist}</p>
+            <span>Correct Answer: {guessData[gameRound].artist}</span>
           )}
           {showNextAction && (
-            <Button onClick={handleNextRound}>{nextAction}</Button>
+            <Button onClick={handleNextRound}>
+              {nextAction}
+            </Button>
           )}
         </>
         {showFinalScore && (
