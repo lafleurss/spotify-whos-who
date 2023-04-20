@@ -6,35 +6,60 @@ import Background from "../Background.jsx"
 import Button from "../Button.jsx"
 
 const StyledGame = styled.div`
+  color: #fff;
   display: flex;
   align-items: center;
   flex-direction: column;
-  background: #fff;
-  opacity: 0.6;
-  border: 5px solid black;
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 30px;
   width: 70%;
   padding: 30px 0px 50px 0px;
+  @media only screen and (max-width: 1000px) {
+    width: 70%;
+  }
+  @media only screen and (max-width: 720px) {
+    width: 80%;
+  }
+  @media only screen and (max-width: 520px) {
+    width: 90%;
+    margin-top: 5%;
+    justify-content: flex-start;
+    padding: 10px;
+  }
 `
 
-const PlayButton = styled.button`
-  background: rgb(182, 67, 29);
-  box-shadow: inset 0px 0px 0px 3px#E3744F;
+const PlayButton = styled.div`
+  text-align: center;
+  line-height: 1.6;
+  letter-spacing: -7px;
+  font-size: 1.6em;
+  background: #40a4ff;
+  padding: 0 3px 0 1px;
+  box-shadow: inset 0px 0px 0px 3px#1F1B56;
   width: 50px;
   height: 50px;
   border-radius: 50%;
   cursor: pointer;
+  &:hover {
+    background: #ff5f1f;
+    box-shadow: inset 0px 0px 0px 3px#6b220f;
+  }
 `
 
 const Song = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  width: 40%;
-  border: 3px solid black;
+  border: 3px solid #fff;
   border-radius: 7px;
-
+  padding: 10px;
   margin: 20px;
+  & * {
+    margin: 0 10px;
+  }
+  @media only screen and (max-width: 520px) {
+    margin: 10px;
+  }
 `
 
 const ArtistContainer = styled.div`
@@ -42,33 +67,42 @@ const ArtistContainer = styled.div`
   display: flex;
   justify-content: space-around;
   margin: 40px;
+  @media only screen and (max-width: 520px) {
+    width: 100%;
+    flex-wrap: wrap;
+    /* flex-direction: column; */
+    justify-content: flex-start;
+    margin: 5%;
+  }
 `
 
 const Artist = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
   height: 230px;
   width: 200px;
   display: flex;
   flex-direction: column;
-  border: 3px solid black;
+  border: 3px solid #fff;
   border-radius: 7px;
   margin: 5px;
   cursor: pointer;
-  & img {
-  }
   & span {
     width: 100%;
+    min-height: 40px;
     text-align: center;
+  }
+  @media only screen and (max-width: 520px) {
+    width: 45%;
   }
 `
 
 const ImgContainer = styled.div`
   width: 95%;
-  height: 80%;
-  background: url(${({ image }) => image});
+  height: 77%;
+  background: url(${({ image }) => image}) center no-repeat;
   background-size: contain;
 `
 
@@ -77,8 +111,12 @@ const FinalScore = styled.div`
   justify-content: space-around;
   align-items: center;
   width: 40%;
-  border: 2px solid black;
   margin: 20px;
+  border: 3px solid #fff;
+  border-radius: 7px;
+  & span {
+    margin: 5px;
+  }
 `
 
 const Game = (props) => {
@@ -90,9 +128,10 @@ const Game = (props) => {
   const [showFinalScore, setShowFinalScore] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentSong, setCurrentSong] = useState(null)
-  const [nextAction, setNextAction] = useState("Next Song")
   const [showNextAction, setShowNextAction] = useState(false)
-  const [clickedIndices, setClickedIndices] = useState([])
+  const [nextAction, setNextAction] = useState(props.location.state.guessDataComplete.length > 1 ? "Next Song" : "Results")
+  const [choiceSubmitted, setChoiceSubmitted] = useState(false)
+  // const [clickedIndices, setClickedIndices] = useState([])
 
   console.log(props)
   const guessData = props.location.state.guessDataComplete
@@ -126,8 +165,8 @@ const Game = (props) => {
 
   const handleNextRound = () => {
     //Reset clicked indices
-    setClickedIndices([])
-
+    // setClickedIndices([])
+    setChoiceSubmitted(false)
     //Stop playing the song if next button is clicked
     if (currentSong) {
       currentSong.stop()
@@ -155,67 +194,72 @@ const Game = (props) => {
   }
 
   const submitArtistChoice = (choice, index) => {
-    if (!clickedIndices.includes(index)) {
-      setClickedIndices([...clickedIndices, index])
-      console.log(clickedIndices)
-      setShowNextAction(true)
-      //check if the choice is correct
-      if (choice.name === guessData[gameRound].artist) {
-        setIsCorrect(true)
-        setIsIncorrect(false)
-        setScore(score + 1)
-        // handleNextRound()
-      } else {
-        setIsCorrect(false)
-        setIsIncorrect(true)
-        // handleNextRound()
-      }
+    // if (!clickedIndices.includes(index)) {
+    //   setClickedIndices([...clickedIndices, index])
+    //   console.log('clickedIndices: ', clickedIndices)
+    setChoiceSubmitted(true)
+    setShowNextAction(true)
+    //check if the choice is correct
+    if (choice.name === guessData[gameRound].artist) {
+      setIsCorrect(true)
+      setIsIncorrect(false)
+      setScore(score + 1)
+    } else {
+      setIsCorrect(false)
+      setIsIncorrect(true)
     }
+    // }
   }
 
   return (
     <Background>
       <StyledGame>
-        {!showFinalScore && (
-          <>
-            <h1>Round {gameRound + 1}</h1>
-            <Song>
-              <h4>Song:</h4>
-              <h2>{guessData[gameRound].name}</h2>
-              <PlayButton onClick={() => playOrPauseSong()}>
-                {isPlaying ? "Pause" : "Play"}
-              </PlayButton>
-            </Song>
-            <ArtistContainer>
-              {guessData[gameRound].choices.map((choice, index) => (
+        <>
+          <h1>Round {gameRound + 1}</h1>
+          <Song>
+            <h4>Song:</h4>
+            <h2>{guessData[gameRound].name}</h2>
+            <PlayButton onClick={() => playOrPauseSong()}>
+              {isPlaying ? "\u275A\u275A" : "\u25B6"}
+            </PlayButton>
+          </Song>
+          <ArtistContainer>
+            {guessData[gameRound].choices.map((choice, index) =>
+              choiceSubmitted ? (
+                <Artist key={index} style={{cursor: 'auto'}}>
+                  <ImgContainer image={choice.imgUrl} />
+                  <span>{choice.name}</span>
+                </Artist>
+              ) : (
                 <Artist
                   key={index}
                   onClick={() => submitArtistChoice(choice, index)}
-                  disabled={clickedIndices.includes(index)}
                 >
                   <ImgContainer image={choice.imgUrl} />
                   <span>{choice.name}</span>
                 </Artist>
-              ))}
-            </ArtistContainer>
-            <div>Current Score: {score}</div>
+              )
+            )}
+          </ArtistContainer>
+          {!showFinalScore && <div>Current Score: {score}</div>}
 
-            {isCorrect === true && <p>Correct!</p>}
-            {isIncorrect === true && <p>Incorrect!</p>}
-            {isIncorrect === true && (
-              <p>Correct Answer: {guessData[gameRound].artist}</p>
-            )}
-            {showNextAction && (
-              <Button onClick={handleNextRound}>{nextAction}</Button>
-            )}
-          </>
-        )}
+          {isCorrect === true && <p>Correct!</p>}
+          {isIncorrect === true && <p>Incorrect!</p>}
+          {isIncorrect === true && (
+            <p>Correct Answer: {guessData[gameRound].artist}</p>
+          )}
+          {showNextAction && (
+            <Button onClick={handleNextRound}>{nextAction}</Button>
+          )}
+        </>
         {showFinalScore && (
           <FinalScore>
             {" "}
-            <h2>
-              Final Score: {score} out of {guessData.length}{" "}
-            </h2>
+            <span>Final Score:</span>
+            <span>
+              {" "}
+              {score} out of {guessData.length}{" "}
+            </span>
             <Button onClick={startNewGame}>New Game</Button>
           </FinalScore>
         )}
