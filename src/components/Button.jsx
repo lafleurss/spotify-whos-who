@@ -14,6 +14,9 @@ const Button = styled.button`
     background: #ff5f1f;
     box-shadow: 2px 2px 2px 2px#6b220f;
   }
+  @media only screen and (max-width: 520px) {
+    margin: 10px;
+  }
 `
 
 export default Button
