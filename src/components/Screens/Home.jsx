@@ -11,25 +11,36 @@ const AUTH_ENDPOINT =
 const TOKEN_KEY = "whos-who-access-token"
 
 const HomeContainer = styled.div`
-  color: rgba(41, 83, 16, 1);
-  font-size: 2em;
-  height: 50vh;
-  width: 50vw;
+  font-size: 2rem;
+  width: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 5px solid black;
   border-radius: 30px;
-  background: #000000;
-  opacity: 0.6;
+  background: rgba(0,0,0,0.6);
   color: white;
+  @media only screen and (max-width: 1000px) {
+    width: 70%;
+  }
+  @media only screen and (max-width: 720px) {
+    width: 80%;
+  }
+  @media only screen and (max-width: 520px) {
+    width: 90%;
+    margin-top: 20%;
+  }
 `
 
 const GameConfig = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 10px;
+  * {
+    margin-right: 10px;
+    margin-left: 10px;
+  }
 `
 
 const GameConfigItem = styled.div`
@@ -38,6 +49,14 @@ const GameConfigItem = styled.div`
   flex-direction: row;
   justify-content: ${({ jc }) => jc};
   padding: 10px 10px 10px 10px;
+  @media only screen and (max-width: 520px) {
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    & input, select {
+      margin-top: 7px;
+    }
+  }
 `
 
 GameConfigItem.defaultProps = {
@@ -46,10 +65,16 @@ GameConfigItem.defaultProps = {
 
 const Select = styled.select`
   border-radius: 7px;
+  font-size: 0.7em;
+  & option {
+    padding-left: 10px;
+  }
 `
 
 const Input = styled.input`
   border-radius: 7px;
+  font-size: 0.8em;
+  max-width: 35px;
 `
 
 const Home = () => {
@@ -229,7 +254,11 @@ const Home = () => {
   }, [])
 
   if (authLoading || configLoading) {
-    return <HomeContainer>Loading...</HomeContainer>
+    return (
+      <Background>
+        <HomeContainer>Loading...</HomeContainer>
+      </Background>
+    )
   }
 
   return (
@@ -243,7 +272,7 @@ const Home = () => {
               value={selectedGenre}
               onChange={(event) => setSelectedGenre(event.target.value)}
             >
-              <option value="">Select Genre</option>
+              <option value=''>Select Genre</option>
               {genres.map((genre) => (
                 <option key={genre} value={genre}>
                   {genre}
@@ -254,10 +283,10 @@ const Home = () => {
           <GameConfigItem>
             # of Songs in Game
             <Input
-              type="number"
-              min="1"
-              max="3"
-              inputMode="numeric"
+              type='number'
+              min='1'
+              max='3'
+              inputMode='numeric'
               value={numSongs}
               onChange={(event) => {
                 const inputVal = event.target.value
@@ -270,10 +299,10 @@ const Home = () => {
           <GameConfigItem>
             # of Artists in Choice
             <Input
-              type="number"
-              min="2"
-              max="4"
-              inputMode="numeric"
+              type='number'
+              min='2'
+              max='4'
+              inputMode='numeric'
               value={numArtists}
               onChange={(event) => {
                 const inputVal = event.target.value
@@ -287,7 +316,7 @@ const Home = () => {
             {/* <Link to="/Game"> */}
             <Button
               width={"80%"}
-              value="Start"
+              value='Start'
               onClick={() => {
                 console.log("Button clicked")
                 console.log("Genre: " + selectedGenre)
