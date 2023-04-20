@@ -34,16 +34,11 @@ const StyledGame = styled.div`
 `
 
 const PlayButton = styled.div`
+  display: flex;
   text-align: center;
-  line-height: 1.6;
-  letter-spacing: -7px;
-  font-size: 1.6em;
+  justify-content: right;
   background: #40a4ff;
-  padding: 0 3px 0 1px;
-  box-shadow: inset 0px 0px 0px 3px#1F1B56;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  padding: 5px 5px 5px 5px;
   cursor: pointer;
   &:hover {
     background: #ff5f1f;
