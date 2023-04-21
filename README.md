@@ -14,9 +14,13 @@ Developed a front-end React application that interfaces with [Spotify's API](htt
 
 ##### The *Business Requirements* are located in the [REQUIREMENTS.md](REQUIREMENTS.md) file.
 
+## Wireframe
+[Google Jamboard] (https://jamboard.google.com/d/1uL2t_lnuhAex9vCn8nOjrtgpCK841ydN1Lf9jVFErPw/edit?usp=sharing)
+
 ## Tech Stack
 * React
 * Node.js
+* howler.js
 
 
 ---
