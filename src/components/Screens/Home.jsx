@@ -295,7 +295,7 @@ const Home = () => {
                 onChange={(event) => {
                   const inputVal = event.target.value
                   // Use regular expression to remove any non-numeric characters
-                  const numericVal = event.target.value.replace(/[^0-9]/g, "")
+                  const numericVal = event.target.value.replace(/[^1-3]/g, "")
                   setNumSongs(numericVal)
                 }}
               />
@@ -311,7 +311,7 @@ const Home = () => {
                 onChange={(event) => {
                   const inputVal = event.target.value
                   // Use regular expression to remove any non-numeric characters
-                  const numericVal = event.target.value.replace(/[^0-9]/g, "")
+                  const numericVal = event.target.value.replace(/[^2-4]/g, "")
                   setNumArtists(numericVal)
                 }}
               />

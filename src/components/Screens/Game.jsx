@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Link, useHistory } from "react-router-dom"
-import styled from "styled-components"
+import styled, { keyframes } from "styled-components"
+import { Keyframes } from "styled-components"
 import { Howl, Howler } from "howler"
 import Background from "../Background.jsx"
 import Content from "../Content.jsx"
@@ -15,8 +16,6 @@ const StyledGame = styled.div`
   background: rgba(0, 0, 0, 0.6);
   border-radius: 30px;
   width: 70%;
-  /* max-height: 95%; */
-  /* padding: 30px 0px 50px 0px; */
   & span {
     margin: 10px 0;
   }
@@ -34,17 +33,24 @@ const StyledGame = styled.div`
   }
 `
 
+const blink = keyframes`
+    0% { background: url("play-blue.png") center no-repeat }
+    50% { background: url("play-pink.png") center no-repeat }
+    100% { background: url("play-blue.png") center no-repeat }
+`
+
 const PlayButton = styled.div`
-  display: flex;
+  min-width: 40px;
+  height: 40px;
   text-align: center;
-  justify-content: right;
-  background: #40a4ff;
-  padding: 5px 5px 5px 5px;
+  animation: ${blink} 0.3s ease-in-out 5 ${({ playState }) => playState};
+  background: url(${({ bg }) => bg}) center no-repeat;
+  background-size: contain;
+  border-radius: 50%;
   cursor: pointer;
   line-height: 1.8;
   &:hover {
-    background: #ff5f1f;
-    box-shadow: inset 0px 0px 0px 3px#6b220f;
+    box-shadow: inset 0px 0px 0px 3px #1f1b56;
   }
 `
 
@@ -128,8 +134,8 @@ const FinalScore = styled.div`
   @media only screen and (max-width: 520px) {
     width: auto;
     & span {
-    text-align: center;
-  }
+      text-align: center;
+    }
   }
 `
 
@@ -147,13 +153,14 @@ const Game = (props) => {
     props.location.state.guessDataComplete.length > 1 ? "Next Song" : "Results"
   )
   const [choiceSubmitted, setChoiceSubmitted] = useState(false)
+  const [animationKey, setAnimationKey] = useState(Math.random())
 
   console.log(props)
   const guessData = props.location.state.guessDataComplete
 
   // toggles the song play or pause and the IsPlaying state
   const toggleSong = (currentSong) => {
-    if (currentSong.playing()) {
+    if (currentSong?.playing()) {
       currentSong.pause()
       setIsPlaying(false)
     } else {
@@ -205,6 +212,10 @@ const Game = (props) => {
   }
 
   const startNewGame = () => {
+    if (currentSong?.playing()) {
+      currentSong.pause()
+      setIsPlaying(false)
+    }
     history.push("/")
   }
 
@@ -236,13 +247,20 @@ const Game = (props) => {
             <Song>
               <h4>Song:</h4>
               <h2>{guessData[gameRound].name}</h2>
-              <PlayButton onClick={() => playOrPauseSong()}>
-                {isPlaying ? "\u275A\u275A" : "\u25B6"}
-              </PlayButton>
+              <PlayButton
+                key={
+                  showNextAction && nextAction === "Next Song"
+                    ? setAnimationKey
+                    : animationKey
+                }
+                playState={showNextAction ? "paused" : "running"}
+                bg={isPlaying ? "stop-blue.png" : "play-blue.png"}
+                onClick={() => playOrPauseSong()}
+              ></PlayButton>
             </Song>
             <ArtistContainer>
               {guessData[gameRound].choices.map((choice, index) =>
-                choiceSubmitted ? (
+                choiceSubmitted || showFinalScore ? (
                   <Artist key={index} style={{ cursor: "auto" }}>
                     <ImgContainer image={choice.imgUrl} />
                     <span>{choice.name}</span>
