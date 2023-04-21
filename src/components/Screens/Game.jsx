@@ -160,7 +160,7 @@ const Game = (props) => {
 
   // toggles the song play or pause and the IsPlaying state
   const toggleSong = (currentSong) => {
-    if (currentSong.playing()) {
+    if (currentSong?.playing()) {
       currentSong.pause()
       setIsPlaying(false)
     } else {
@@ -212,8 +212,10 @@ const Game = (props) => {
   }
 
   const startNewGame = () => {
-    currentSong.pause()
-    setIsPlaying(false)
+    if (currentSong?.playing()) {
+      currentSong.pause()
+      setIsPlaying(false)
+    }
     history.push("/")
   }
 
@@ -246,7 +248,11 @@ const Game = (props) => {
               <h4>Song:</h4>
               <h2>{guessData[gameRound].name}</h2>
               <PlayButton
-                key={ (showNextAction && nextAction === "Next Song" )? setAnimationKey : animationKey}
+                key={
+                  showNextAction && nextAction === "Next Song"
+                    ? setAnimationKey
+                    : animationKey
+                }
                 playState={showNextAction ? "paused" : "running"}
                 bg={isPlaying ? "stop-blue.png" : "play-blue.png"}
                 onClick={() => playOrPauseSong()}
@@ -254,7 +260,7 @@ const Game = (props) => {
             </Song>
             <ArtistContainer>
               {guessData[gameRound].choices.map((choice, index) =>
-                (choiceSubmitted || showFinalScore) ? (
+                choiceSubmitted || showFinalScore ? (
                   <Artist key={index} style={{ cursor: "auto" }}>
                     <ImgContainer image={choice.imgUrl} />
                     <span>{choice.name}</span>
