@@ -6,16 +6,10 @@ const Background = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  background-attachment: fixed;
+  position: fixed;
+  z-index: -1;
   height: 100vh;
   width: 100vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  @media only screen and (max-width: 520px) {
-    justify-content: safe flex-start;
-  }
 `
 
 export default Background

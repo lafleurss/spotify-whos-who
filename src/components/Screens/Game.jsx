@@ -3,6 +3,7 @@ import { Link, useHistory } from "react-router-dom"
 import styled from "styled-components"
 import { Howl, Howler } from "howler"
 import Background from "../Background.jsx"
+import Content from "../Content.jsx"
 import Button from "../Button.jsx"
 
 const StyledGame = styled.div`
@@ -14,7 +15,7 @@ const StyledGame = styled.div`
   background: rgba(0, 0, 0, 0.6);
   border-radius: 30px;
   width: 70%;
-  max-height: 95%;
+  /* max-height: 95%; */
   /* padding: 30px 0px 50px 0px; */
   & span {
     margin: 10px 0;
@@ -40,6 +41,7 @@ const PlayButton = styled.div`
   background: #40a4ff;
   padding: 5px 5px 5px 5px;
   cursor: pointer;
+  line-height: 1.8;
   &:hover {
     background: #ff5f1f;
     box-shadow: inset 0px 0px 0px 3px#6b220f;
@@ -67,11 +69,10 @@ const ArtistContainer = styled.div`
   display: flex;
   justify-content: space-around;
   margin: 40px;
-  @media only screen and (max-width: 520px) {
+  @media only screen and (max-width: 600px) {
     width: 100%;
     flex-wrap: wrap;
-    /* flex-direction: column; */
-    justify-content: flex-start;
+    justify-content: space-evenly;
     margin: 5%;
   }
 `
@@ -94,8 +95,14 @@ const Artist = styled.div`
     min-height: 40px;
     text-align: center;
   }
-  @media only screen and (max-width: 520px) {
+  @media only screen and (max-width: 1000px) {
+    height: 170px;
+  }
+  @media only screen and (max-width: 600px) {
     width: 45%;
+  }
+  @media only screen and (max-width: 400px) {
+    width: 40%;
   }
 `
 
@@ -118,6 +125,12 @@ const FinalScore = styled.div`
   & span {
     margin: 5px;
   }
+  @media only screen and (max-width: 520px) {
+    width: auto;
+    & span {
+    text-align: center;
+  }
+  }
 `
 
 const Game = (props) => {
@@ -134,7 +147,6 @@ const Game = (props) => {
     props.location.state.guessDataComplete.length > 1 ? "Next Song" : "Results"
   )
   const [choiceSubmitted, setChoiceSubmitted] = useState(false)
-  // const [clickedIndices, setClickedIndices] = useState([])
 
   console.log(props)
   const guessData = props.location.state.guessDataComplete
@@ -215,61 +227,62 @@ const Game = (props) => {
   }
 
   return (
-    <Background>
-      <StyledGame>
-        <>
-          <h1>Round {gameRound + 1}</h1>
-          <Song>
-            <h4>Song:</h4>
-            <h2>{guessData[gameRound].name}</h2>
-            <PlayButton onClick={() => playOrPauseSong()}>
-              {isPlaying ? "\u275A\u275A" : "\u25B6"}
-            </PlayButton>
-          </Song>
-          <ArtistContainer>
-            {guessData[gameRound].choices.map((choice, index) =>
-              choiceSubmitted ? (
-                <Artist key={index} style={{ cursor: "auto" }}>
-                  <ImgContainer image={choice.imgUrl} />
-                  <span>{choice.name}</span>
-                </Artist>
-              ) : (
-                <Artist
-                  key={index}
-                  onClick={() => submitArtistChoice(choice, index)}
-                >
-                  <ImgContainer image={choice.imgUrl} />
-                  <span>{choice.name}</span>
-                </Artist>
-              )
-            )}
-          </ArtistContainer>
-          {!showFinalScore && <div>Current Score: {score}</div>}
+    <>
+      <Background></Background>
+      <Content>
+        <StyledGame>
+          <>
+            <h1>Round {gameRound + 1}</h1>
+            <Song>
+              <h4>Song:</h4>
+              <h2>{guessData[gameRound].name}</h2>
+              <PlayButton onClick={() => playOrPauseSong()}>
+                {isPlaying ? "\u275A\u275A" : "\u25B6"}
+              </PlayButton>
+            </Song>
+            <ArtistContainer>
+              {guessData[gameRound].choices.map((choice, index) =>
+                choiceSubmitted ? (
+                  <Artist key={index} style={{ cursor: "auto" }}>
+                    <ImgContainer image={choice.imgUrl} />
+                    <span>{choice.name}</span>
+                  </Artist>
+                ) : (
+                  <Artist
+                    key={index}
+                    onClick={() => submitArtistChoice(choice, index)}
+                  >
+                    <ImgContainer image={choice.imgUrl} />
+                    <span>{choice.name}</span>
+                  </Artist>
+                )
+              )}
+            </ArtistContainer>
+            {!showFinalScore && <div>Current Score: {score}</div>}
 
-          {isCorrect === true && <span>Correct!</span>}
-          {isIncorrect === true && <span>Incorrect!</span>}
-          {isIncorrect === true && (
-            <span>Correct Answer: {guessData[gameRound].artist}</span>
-          )}
-          {showNextAction && (
-            <Button onClick={handleNextRound}>
-              {nextAction}
-            </Button>
-          )}
-        </>
-        {showFinalScore && (
-          <FinalScore>
-            {" "}
-            <span>Final Score:</span>
-            <span>
+            {isCorrect === true && <span>Correct!</span>}
+            {isIncorrect === true && <span>Incorrect!</span>}
+            {isIncorrect === true && (
+              <span>Correct Answer: {guessData[gameRound].artist}</span>
+            )}
+            {showNextAction && (
+              <Button onClick={handleNextRound}>{nextAction}</Button>
+            )}
+          </>
+          {showFinalScore && (
+            <FinalScore>
               {" "}
-              {score} out of {guessData.length}{" "}
-            </span>
-            <Button onClick={startNewGame}>New Game</Button>
-          </FinalScore>
-        )}
-      </StyledGame>
-    </Background>
+              <span>Final Score:</span>
+              <span>
+                {" "}
+                {score} out of {guessData.length}{" "}
+              </span>
+              <Button onClick={startNewGame}>New Game</Button>
+            </FinalScore>
+          )}
+        </StyledGame>
+      </Content>
+    </>
   )
 }
 
